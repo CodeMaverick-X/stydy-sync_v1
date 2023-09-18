@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 """Blueprint for authentication"""
-from flask import Blueprint, current_app, jsonify
+import json
+
+from flask import Blueprint, current_app, jsonify, make_response, request
 from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
 
@@ -25,16 +27,29 @@ def load_user(user_id):
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     """LOGIN view"""
-    user = User(username="reinhard_02", email="reinhard_02@mail.com")
-    user.save()
-    login_user(user)
-
-    return [user.email, 'logged in']
+    pass
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
     """SIGNUP view"""
-    return 'signed up'
+
+    if request.is_json:
+        data = json.loads(request.get_data())
+        username, email, password, passwordConfirm = data.values()
+        if User.find(username=username):
+            return make_response(jsonify({'errormessage': 'username used'}), 400)
+        if User.find(email=email):
+            return make_response(jsonify({'errormessage': 'email used'}), 400)
+        user = User(username=username, password=password, email=email)
+        user.save() # save user
+        
+        return make_response(jsonify({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email
+             }), 201)
+
+    return make_response(jsonify({'errormessage' : 'request not json'}), 400)
 
 @auth_bp.route('/home', methods=['GET'])
 @login_required

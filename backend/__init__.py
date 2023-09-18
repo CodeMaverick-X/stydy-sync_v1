@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask, g
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -11,6 +12,7 @@ app.config.from_mapping(
 )
 # print('__________[[[[[[[[!!--DEBUGGING--!!]]]]]]]]___________')
 db = SQLAlchemy(app)
+CORS(app)
 # print('__________[[[[[[[[!!--DEBUGGING--!!]]]]]]]]___________')
 
 
