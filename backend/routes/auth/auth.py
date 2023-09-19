@@ -24,10 +24,21 @@ def load_user(user_id):
 """AUTH ROUTES"""
 
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     """LOGIN view"""
-    pass
+    data = json.loads(request.get_data())
+    username, password = data.values()
+    user = User.find(username=username)
+    if user:
+        if password == user[0].password: # hash password
+            print('Login')
+        else:
+            print('wrong password')
+    else:
+        print('user does not exist')
+    
+    return make_response(jsonify({'data': 'this is a test'})) # just a test
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
