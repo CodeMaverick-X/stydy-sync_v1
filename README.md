@@ -7,4 +7,4 @@ it is still under development and this readme will be updated as the project pro
 
 [backend](backend/): This contains the back end code written with flask.
 
-[front-end](front-end/): code for the frontend with react and tailwingcss. 
+[front-end](frontend/): code for the frontend with react and tailwingcss. 
