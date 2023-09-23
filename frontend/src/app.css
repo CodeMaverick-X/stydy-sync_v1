@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    /* Default Styles */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f7f7f7;
+    }
+    
+    /* Add any default styles you want here */
+    
+    /* Layer Base */
+    h1 {
+        font-size: 2rem;
+        font-weight: 600;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+    
+    /* Add more default styles as needed */
+    
+    /* Other custom styles can be added here */
+  
+}

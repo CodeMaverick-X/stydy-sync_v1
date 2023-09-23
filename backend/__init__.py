@@ -4,7 +4,7 @@ from flask import Flask, g
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__, static_folder='../front-end/build', static_url_path='/')
+app = Flask(__name__, static_folder='../frontend/build', static_url_path='/')
 app.config.from_mapping(
     SECRET_KEY='dev_SECRETE',
     SQLALCHEMY_DATABASE_URI='mysql+pymysql://new_admin:admin-pass@database-1/studysync_dev_db',
