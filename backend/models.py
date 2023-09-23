@@ -26,7 +26,8 @@ class User(UserMixin, Base):
     """user model"""
     __tablename__ = 'users'
 
-    id = db.Column(db.String(36), primary_key=True, default=generate_uuid, unique=True)
+    id = db.Column(db.Integer, primary_key=True)
+    secodary_id = db.Column(db.String(36), default=generate_uuid, unique=True)
     username = db.Column(db.String(50), unique=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100), unique=False)

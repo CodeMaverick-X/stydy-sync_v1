@@ -4,7 +4,7 @@ from flask import Flask, g
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../front-end/build', static_url_path='/')
 app.config.from_mapping(
     SECRET_KEY='dev_SECRETE',
     SQLALCHEMY_DATABASE_URI='mysql+pymysql://new_admin:admin-pass@database-1/studysync_dev_db',
@@ -12,7 +12,7 @@ app.config.from_mapping(
 )
 # print('__________[[[[[[[[!!--DEBUGGING--!!]]]]]]]]___________')
 db = SQLAlchemy(app)
-CORS(app)
+CORS(app, supports_credentials=True)
 # print('__________[[[[[[[[!!--DEBUGGING--!!]]]]]]]]___________')
 
 
@@ -20,6 +20,11 @@ with app.app_context():
     from backend.routes.auth.auth import auth_bp
 
 app.register_blueprint(auth_bp)
+
+@app.route('/')
+def serve_react_app():
+    return app.send_static_file('index.html')
+
 
 
 

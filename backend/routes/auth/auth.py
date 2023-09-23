@@ -32,13 +32,19 @@ def login():
     user = User.find(username=username)
     if user:
         if password == user[0].password: # hash password
-            print('Login')
+            user = user[0]
+            login_user(user) # login user
+            return make_response(jsonify({
+            'id': current_user.id,
+            'username': user.username,
+            'email': user.email
+             }), 200)
         else:
-            print('wrong password')
+            return make_response(jsonify({'errormessage': 'wrong username or password'}), 401)
     else:
-        print('user does not exist')
+        return make_response(jsonify({'errormessage': 'wrong username or password'}), 401)
     
-    return make_response(jsonify({'data': 'this is a test'})) # just a test
+
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
@@ -53,6 +59,7 @@ def signup():
             return make_response(jsonify({'errormessage': 'email used'}), 400)
         user = User(username=username, password=password, email=email)
         user.save() # save user
+        login_user(user) # login user
         
         return make_response(jsonify({
             'id': user.id,
@@ -62,16 +69,28 @@ def signup():
 
     return make_response(jsonify({'errormessage' : 'request not json'}), 400)
 
-@auth_bp.route('/home', methods=['GET'])
-@login_required
-def index():
-    """HOME view"""
-    return f'this is the home page for {current_user.username}'
+# @auth_bp.route('/home', methods=['GET'])
+# @login_required
+# def index():
+    # """HOME view"""
+    # return f'this is the home page for {current_user.username}'
 
 
 @auth_bp.route('/logout', methods=['POST'])
 @login_required
 def logout():
     """LOGOUT view"""
-    logout_user()
-    return 'logged out'
+    if current_user:
+        logout_user()
+        response = make_response(jsonify({'message': 'logged out'}), 200)
+        response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5000'  # Update with your actual frontend origin
+        
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        
+        return response
+    return make_response(jsonify({'errormessage': 'something wrong with session'}))
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    """return for unauthorized to stop an html error page from been sent"""
+    return make_response(jsonify({'errormessage': 'unauthorized'}), 401)
