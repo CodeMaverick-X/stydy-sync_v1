@@ -21,6 +21,8 @@ with app.app_context():
     from backend.routes.api import api_bp
     from backend.routes.auth.auth import auth_bp
 
+socketio = SocketIO(app)
+
 app.register_blueprint(auth_bp)
 app.register_blueprint(api_bp)
 
@@ -34,4 +36,4 @@ def serve_react_app():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)
