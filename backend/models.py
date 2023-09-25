@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from flask_login import UserMixin
 
@@ -22,6 +23,11 @@ class Base(db.Model):
         """find object based on params"""
         return cls.query.filter_by(**kwargs).all()
 
+group_members = db.Table('group_members',
+    db.Column('group_id', db.String(36), db.ForeignKey('groups.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'))
+)
+
 class User(UserMixin, Base):
     """user model"""
     __tablename__ = 'users'
@@ -31,3 +37,39 @@ class User(UserMixin, Base):
     username = db.Column(db.String(50), unique=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100), unique=False)
+    groups = db.relationship('Group', secondary=group_members, back_populates='members')
+    messages = db.relationship('Message', back_populates='user')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Group(Base):
+    """Group model for group chats"""
+
+    __tablename__ = 'groups'
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid, unique=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    content = db.Column(db.String(200), unique=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    members = db.relationship('User', secondary=group_members, back_populates='groups')
+    name = db.Column(db.String(50), unique=False)
+    messages = db.relationship('Message', back_populates='group')
+
+
+class Message(Base):
+    """Message model for message objects"""
+
+    __tablename__ = 'messages'
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid, unique=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', back_populates='messages')
+    content = db.Column(db.String(200), unique=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    sort_number = db.Column(db.Integer)
+    group = db.relationship('Group', back_populates='messages')
+
+
+    @classmethod
+    def get(cls, **kwargs):
+        """returns messages ordered by created at"""
+        return cls.query.order_by(cls.created_at).all()
