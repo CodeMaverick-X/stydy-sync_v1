@@ -1,8 +1,9 @@
-from flask import request
+from flask import current_app, request
+from flask_socketio import SocketIO
 
-from backend import socketio
 from backend.routes.api import api_bp
 
+socketio = SocketIO(current_app)
 
 @api_bp.route('/chat')
 def chat():

@@ -2,7 +2,6 @@ import os
 
 from flask import Flask, g
 from flask_cors import CORS
-from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, static_folder='../frontend/build', static_url_path='/')
@@ -19,9 +18,9 @@ CORS(app, supports_credentials=True)
 
 with app.app_context():
     from backend.routes.api import api_bp
+    from backend.routes.api.chat import socketio
     from backend.routes.auth.auth import auth_bp
 
-socketio = SocketIO(app)
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(api_bp)
