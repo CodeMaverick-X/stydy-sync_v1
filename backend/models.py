@@ -67,6 +67,7 @@ class Message(Base):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     sort_number = db.Column(db.Integer)
     group = db.relationship('Group', back_populates='messages')
+    group_id = db.Column(db.String(36), db.ForeignKey('groups.id'))
 
 
     @classmethod

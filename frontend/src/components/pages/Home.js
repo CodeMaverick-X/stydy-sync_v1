@@ -1,6 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import Message from "../message";
+
 
 export default function Home() {
     const navigate = useNavigate()
@@ -32,6 +34,7 @@ export default function Home() {
         <>
         <p>Welcome to the home page</p>
         <button onClick={handleLogOut}>Logout</button>
+        <Message />
         </>
     )
 }
