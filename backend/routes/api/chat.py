@@ -1,18 +1,35 @@
 from flask import current_app, request
-from flask_socketio import SocketIO, emit
+from flask_socketio import emit
 
+from backend import socketio
 from backend.routes.api import api_bp
 
-print('[[[###+++DEBUGGING+++###]]]] befor socket io int')
-# socketio = SocketIO(current_app)
 
 @api_bp.route('/chat')
 def chat():
     return 'helloworld'
-print('[[[###+++DEBUGGING+++###]]]]beofr handler')
 
-# @socketio.on('message')
-# def handle_message(data):
-#     print('[[[###+++DEBUGGING+++###]]]]')
-#     emit('message', data, broadcast=True)
-#     print('[[[###+++DEBUGGING+++###]]]]')
+
+@socketio.on('login')
+def connected():
+    print(request.sid)
+    print('client is connected')
+    emit('connect', {
+        'data': f'id: {request.sid} is connected'
+    })
+
+@socketio.on('disconnect')
+def disconnected():
+    print('user disconnected')
+    emit('disconnect', f'user {request.sid} has been disconnected', broadcast=True)
+
+@socketio.on('data')
+def handle_message(data):
+    print('Data from the end: ', str(data))
+    emit('data', {
+        'data': f'data, id {request.sid}'
+    }, broadcast=True) 
+
+@socketio.on('message')
+def handle_message(data):
+    emit('message', data, broadcast=True)

@@ -1,35 +1,36 @@
 import React, { useState, useEffect } from "react"
 
-import socketIOClient from 'socket.io-client'
 
 const ENDPOINT = 'http://localhost:5000/' // replace with main endpoint
 
-export default function Message() {
+export default function Message({socket}) {
     const [message, setMessage] = useState('')
     const [messages, setMessages] = useState([])
 
-    const socket = socketIOClient()
 
-    useEffect(() => {
-        socket.on('message', (data) => {
-            setMessages((prev) => {
-                return [...prev, data]
-            })
-    })
-    }, [])
-    console.log('************ -DEBUGGING- *************')
-
-    useEffect(() => {
-        console.log('new message was gotten')
-        console.log(messages)
-        
-        }
-    , [messages])
-
-    const sendMessage = () => {
-        socket.emit('message', message)
+    const sendMessage = (e) => {
+        e.preventDefault()
+        const form =e.target
+        console.log(form,form.message.value);
+        socket.emit('data', form.message.value)
         setMessage('')
     }
+
+    useEffect(() => {
+        if(socket){
+            socket.on('data', (data) => {
+                setMessages([...messages, data.data])
+            })
+        }
+        
+        return () => {
+            if(socket) {
+                socket.off('data', () => {
+                    console.log('data event was removed')
+                })
+        }
+        }
+    }, [socket, messages])
 
     return (
         <div>
@@ -38,12 +39,17 @@ export default function Message() {
                     <div key={index}>{msg}</div>
                 ))}
             </div>
-            <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-            />
-            <button onClick={sendMessage}>Send</button>
+            <form onSubmit={sendMessage}>
+                <input
+                    type="text"
+                    name="message"
+            
+                
+                />  
+                    <button type="submit">Send</button>
+            </form>
+    
+        
         </div>
     )
 }
