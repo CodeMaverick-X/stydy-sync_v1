@@ -30,9 +30,9 @@ export default function Home() {
                 console.log(data, 'disconnect event')
             })
 
-            //  return function cleanup() {
-            //      socket.disconnect()
-            //  }
+             return function cleanup() {
+                 socket.disconnect()
+             }
         }
     }, [buttonStatus])
 
