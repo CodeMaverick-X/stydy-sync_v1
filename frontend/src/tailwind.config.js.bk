@@ -1,0 +1,53 @@
+/** @type {import('tailwindcss').Config} */
+
+const withMT = require("@material-tailwind/react/utils/withMT");
+ 
+module.exports = withMT({
+    content: ['./src/**/*.{js,jsx,ts,tsx}', './src/components/**/*.{js,jsx,ts,tsx}', './components/pages/**/*.{js,jsx,ts,tsx}' ],
+  theme: {
+    extend: {
+        fontFamily: {
+          sans: ['Roboto', 'sans'], // Customize the default font family
+        },
+        colors: {
+          primary: {
+            50: '#E3F2FD',
+            100: '#BBDEFB',
+            200: '#90CAF9',
+            300: '#64B5F6',
+            400: '#42A5F5',
+            500: '#2196F3', // Primary color
+            600: '#1E88E5',
+            700: '#1976D2',
+            800: '#1565C0',
+            900: '#0D47A1',
+          },
+          secondary: {
+            50: '#FCE4EC',
+            100: '#F8BBD0',
+            200: '#F48FB1',
+            300: '#F06292',
+            400: '#EC407A',
+            500: '#E91E63', // Secondary color
+            600: '#D81B60',
+            700: '#C2185B',
+            800: '#AD1457',
+            900: '#880E4F',
+          },
+          // Add more custom colors as needed
+        },
+        boxShadow: {
+          md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)', // Customize box shadow
+        },
+      },
+  },
+  plugins: [],
+});
+// module.exports = {
+//   content: ['./src/**/*.{js,jsx,ts,tsx}', './src/components/**/*.{js,jsx,ts,tsx}', './components/pages/**/*.{js,jsx,ts,tsx}' ],
+//   theme: {
+//     extend: {},
+//   },
+//   plugins: [],
+// }
+
