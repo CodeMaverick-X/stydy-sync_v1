@@ -27,7 +27,7 @@ def disconnected():
 def handle_message(data):
     print('Data from the end: ', str(data))
     emit('data', {
-        'data': f'data, id {request.sid}'
+        'data': f'{data}'
     }, broadcast=True) 
 
 @socketio.on('message')

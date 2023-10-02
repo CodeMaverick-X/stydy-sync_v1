@@ -24,7 +24,9 @@ with app.app_context():
 app.register_blueprint(auth_bp)
 app.register_blueprint(api_bp)
 
-
+@app.route('/signup')
+@app.route('/home')
+@app.route('/login')
 @app.route('/')
 def serve_react_app():
     return app.send_static_file('index.html')
