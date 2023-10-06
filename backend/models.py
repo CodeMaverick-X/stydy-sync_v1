@@ -55,6 +55,18 @@ class Group(Base):
     messages = db.relationship('Message', back_populates='group')
 
 
+    def to_dict(self):
+        """return dict of obj for serialization"""
+        new_dict = {}
+        for key, value in self.__dict__.items():
+            if key != 'messages' and key != 'members' and key != '_sa_instance_state':
+                if key == 'created_at' and isinstance(value, datetime):
+                    new_dict[key] = value.strftime('%Y-%m-%d %H:%M:%S')  # Format the datetime as a string
+                else:
+                    new_dict[key] = value
+        return new_dict
+
+
 class Message(Base):
     """Message model for message objects"""
 
@@ -74,3 +86,18 @@ class Message(Base):
     def get(cls, **kwargs):
         """returns messages ordered by created at"""
         return cls.query.order_by(cls.created_at).all()
+
+    def to_dict(self):
+        """return dict of obj for serialisation"""
+        new_dict = {}
+        print(self, self.content, 'the self and dict') # bugg from something greater than me needs this
+
+        for key, value in self.__dict__.items():
+            if key != 'group' and key != 'user' and key != '_sa_instance_state':
+                if key == 'created_at' and isinstance(value, datetime):
+                    new_dict[key] = value.strftime('%Y-%m-%d %H:%M:%S')  # Format the datetime as a string
+                else:
+                    new_dict[key] = value
+        # print(new_dict, 'from to dict funct---------------')
+        return new_dict
+

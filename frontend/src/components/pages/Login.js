@@ -1,7 +1,11 @@
 import React from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom"
+import { useUser } from '../UserContext';
 
 export default function Login() {
+
+    const { userData, setUserData } = useUser();
+
     const [formData, setFormData] = React.useState({
         username: "",
         password: "",
@@ -31,8 +35,9 @@ export default function Login() {
             });
 
             if (response.ok) {
-                const data = await response.json();
-                console.log('successful');
+                const data = await response.json()
+                setUserData(data)
+                console.log('successful')
                 navigate('/home');
                 // handle success like redirect
                 console.log(data);
