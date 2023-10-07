@@ -69,15 +69,21 @@ export default function Message({ group_id, group_name }) {
     }, [])
 
 
-    const sendMessage = (e) => {
+    const sendMessage = () => {
         const inputBox = document.querySelector('.message-box')
         const message = inputBox.value
         console.log(message);
         socket.emit('data', { message, group_id, user_id })
         inputBox.value = ''
     }
+    const handleEnterKey = (e) => {
+        if (e.key === 'Enter') {
+          // Enter key was pressed, trigger the button click
+          sendMessage();
+        }
+      }
 
-    
+
     return (
         <div className="container px-6 mx-auto lg:max-w-6xl">
             <div> {group_name}: {group_id}</div>
@@ -88,7 +94,11 @@ export default function Message({ group_id, group_name }) {
             </div>
             <div className="flex">
                 <div className="w-72 mr-4">
-                    <Input name="message" className="message-box rounded-lg" type={'text'} />
+                    <Input 
+                        name="message" 
+                        className="message-box rounded-lg" 
+                        type={'text'} 
+                        onKeyUp={handleEnterKey}/>
                 </div>
                 <Button variant="gradient" className="rounded-lg" onClick={sendMessage}>{'>>'}</Button>
             </div>
