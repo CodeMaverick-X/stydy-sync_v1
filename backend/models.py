@@ -17,6 +17,7 @@ class Base(db.Model):
         """save the object to the database"""
         db.session.add(self)
         db.session.commit()
+        db.session.refresh(self)
 
     @classmethod
     def find(cls, **kwargs):
@@ -25,7 +26,7 @@ class Base(db.Model):
 
 group_members = db.Table('group_members',
     db.Column('group_id', db.String(36), db.ForeignKey('groups.id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id'))
+    db.Column('user_id', db.String(36), db.ForeignKey('users.secodary_id'))
 )
 
 class User(UserMixin, Base):
@@ -47,8 +48,8 @@ class Group(Base):
     __tablename__ = 'groups'
 
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid, unique=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    content = db.Column(db.String(200), unique=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.secodary_id'))
+    # content = db.Column(db.String(200), unique=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     members = db.relationship('User', secondary=group_members, back_populates='groups')
     name = db.Column(db.String(50), unique=False)
@@ -58,6 +59,7 @@ class Group(Base):
     def to_dict(self):
         """return dict of obj for serialization"""
         new_dict = {}
+        db.session.refresh(self)
         for key, value in self.__dict__.items():
             if key != 'messages' and key != 'members' and key != '_sa_instance_state':
                 if key == 'created_at' and isinstance(value, datetime):
@@ -73,7 +75,7 @@ class Message(Base):
     __tablename__ = 'messages'
 
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid, unique=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.secodary_id'))
     user = db.relationship('User', back_populates='messages')
     content = db.Column(db.String(200), unique=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -90,7 +92,8 @@ class Message(Base):
     def to_dict(self):
         """return dict of obj for serialisation"""
         new_dict = {}
-        print(self, self.content, 'the self and dict') # bugg from something greater than me needs this
+        db.session.refresh(self)
+        # print(self, self.content, 'the self and dict') # bugg from something greater than me needs this
 
         for key, value in self.__dict__.items():
             if key != 'group' and key != 'user' and key != '_sa_instance_state':

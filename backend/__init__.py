@@ -15,7 +15,7 @@ app.config.from_mapping(
 db = SQLAlchemy(app)
 CORS(app, supports_credentials=True)
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", engineio_logger=True, logger=True)
 
 with app.app_context():
     from backend.routes.api import api_bp

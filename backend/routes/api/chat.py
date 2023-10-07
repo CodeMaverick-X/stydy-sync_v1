@@ -9,14 +9,6 @@ from backend.models import Group, Message, User
 from backend.routes.api import api_bp
 
 # web-socket listeners
-# @socketio.on('login')
-# def connected():
-#     print(request.sid)
-#     print('client is connected')
-#     emit('connect', {
-#         'data': f'id: {request.sid} is connected'
-#     })
-
 
 @socketio.on('join')
 def join_r(data):
@@ -49,7 +41,7 @@ def handle_message(data):
 
     room = str(group_id)
     group = Group.find(id=group_id)
-    user = User.find(id=user_id)
+    user = User.find(secodary_id =user_id)
     # print(f'{group_id} ------ {user_id} ------- {message}')
     if group and user:
         user = user[0]
@@ -64,17 +56,13 @@ def handle_message(data):
         message_obj.save()
         message = message_obj.to_dict()
         # print(message, message_obj)
-        # print('hello- success')
+        # print('hello- success----')
     
         emit('data', message, room=room)
 
 
-# @socketio.on('message')
-# def handle_message(data):
-#     emit('message', data, broadcast=True)
+# Groups api
 
-
-# groups api
 @api_bp.route('/group', methods=['POST'])
 @login_required
 def create_group():
@@ -102,13 +90,6 @@ def delete_group():
     NotImplemented
 
 
-# @api_bp.route('/joingroup', methods=['POST'])
-# @login_required
-# def join_group():
-#     """other users to join a group"""
-#     NotImplemented
-
-
 @api_bp.route('/groups', methods=['GET'])
 @login_required
 def get_groups():
@@ -133,12 +114,12 @@ def join_group():
     group_id = data.get('group_id')
     user = g.user
     group = Group.find(id=group_id)
-    if user_id and user_id != g.user.id:
+    if user_id and user_id != g.user.secodary_id:
         return make_response(jsonify({'errormessage': 'you doing something fishy with the user_id'}), 400)
 
     if group and user:
         group = group[0]
-        print('before already------------------#####')
+        print('before already------------------#####') # DEBUGGING
         already_in_group = [g for member in group.members if member.id == user.id]
         if already_in_group:
             return make_response(jsonify({'group_id': f'{group.id}', 'group_name': f'{group.name}',
@@ -156,12 +137,10 @@ def join_group():
 
 # messages api
 
-
 @api_bp.route('messages/<group_id>', methods=['GET'])
 @login_required
 def get_messages(group_id):
     """get messages for a group"""
-    # group_id = json.loads(request.get_data())
     group = Group.find(id=group_id)
 
     if group:
@@ -177,5 +156,5 @@ def load_user():
     g.user = None
     if 'user_id' in session:
         user_id = session.get('user_id')
-        g.user = User.find(id=user_id)[0]
+        g.user = User.find(secodary_id =user_id)[0]
         g.name = g.user.username

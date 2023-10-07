@@ -1,8 +1,6 @@
 import React, { useEffect, useState, createContext} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Default from "../Default";
-
-
 import {
     Navbar,
     MobileNav,
@@ -16,8 +14,8 @@ import {
     Input
 } from "@material-tailwind/react";
 
-export const pageContext = createContext()
 
+export const pageContext = createContext()
 
 export default function Home() {
     const navigate = useNavigate()

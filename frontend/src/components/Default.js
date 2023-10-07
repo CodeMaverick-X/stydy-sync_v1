@@ -57,12 +57,12 @@ export default function Default() {
                     'Content-Type': 'application/json',
                 },
                 credentials: 'include',
-                body: JSON.stringify({'user_id': user_id, 'group_id': group_id}),
+                body: JSON.stringify({ 'user_id': user_id, 'group_id': group_id }),
             })
 
             const data = res.json()
             if (res.ok) {
-                
+
                 console.log(`joined group ${data}`)
             } else {
                 console.log('could not join group')
@@ -94,12 +94,14 @@ export default function Default() {
                 console.log(error)
 
             }
+            // setGroups([{'id': '132435465768', 'name': 'Hello world'}])
         }
         fetch_gr()
     }, [])
 
-    function handlePageChange(group_id) {
-        setCurrentPage(<Message group_id={group_id} />)
+
+    function handlePageChange(group_id, group_name) {
+        setCurrentPage(<Message group_id={group_id} group_name={group_name} />)
     }
 
     return (
@@ -138,31 +140,33 @@ export default function Default() {
                 </div>
             </div>
             <div className="groups-container mt-5 space-y-2">
+                <Typography variant="h4" className="mb-1"> Groups</Typography>
                 {groups.map((group, index) => (
                     <div key={index}>
-                        <a href="#" className="w-96" onClick={() => handlePageChange(group.id)}>
-                            <Card className="w-96 max-w-[48rem] flex-row" color="light-green" variant="gradient">
-                                <CardHeader
-                                    shadow={false}
-                                    floated={false}
-                                    className="m-0 w-2/5 shrink-0 rounded-r-none"
-                                >
-                                    <img
-                                        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"
-                                        alt="card-image"
-                                        className="h-full w-full object-cover"
-                                    />
-                                </CardHeader>
-                                <CardBody>
-                                    <Typography variant="h5" color="blue-gray" className="mb-2">
-                                        {group.name}
-                                    </Typography>
-                                    <Typography color="gray" className="mb-1 font-normal">
-                                        {group.id}
-                                    </Typography>
-                                </CardBody>
-                            </Card>
-                        </a>
+
+                        <Card className="w-3/5 max-w-[48rem] flex-row"  variant="gradient">
+                            <CardHeader
+                                shadow={false}
+                                floated={false}
+                                className="m-0 w-2/5 shrink-0 rounded-r-none"
+                            >
+                                <img
+                                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"
+                                    alt="card-image"
+                                    className="h-full w-full object-cover"
+                                />
+                            </CardHeader>
+                            <CardBody>
+                                <Typography variant="h5" color="blue-gray" className="mb-2">
+                                    {group.name}
+                                </Typography>
+                                <Typography color="gray" className="mb-1 font-normal">
+                                    {group.id}
+                                </Typography>
+                                <Button onClick={() => handlePageChange(group.id, group.name)} >Chat</Button>
+                            </CardBody>
+                        </Card>
+
                     </div>
                 ))}
             </div>
