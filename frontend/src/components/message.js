@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { io } from "socket.io-client";
 import { useUser } from './UserContext'
 import { Input, Button } from "@material-tailwind/react"
@@ -9,6 +9,7 @@ const ENDPOINT = 'http://localhost:5000/' // replace with main endpoint
 export default function Message({ group_id, group_name }) {
     const [messages, setMessages] = useState([])
     const [socket, setSocket] = useState('')
+    const messagesRef = useRef(null)
     const { userData } = useUser()
     const user_id = userData.id
 
@@ -28,9 +29,9 @@ export default function Message({ group_id, group_name }) {
 
                 if (res.ok) {
                     const data = await res.json()
-                    let messages_content = data.messages.map((msg_obj) => msg_obj.content)
-                    console.log(messages_content, 'from messages')
-                    setMessages(messages_content)
+                    let messages = data.messages //.map((msg_obj) => msg_obj.content)
+                    console.log(messages, 'from messages')
+                    setMessages(messages)
                 }
             }
             fetch_msg()
@@ -53,7 +54,7 @@ export default function Message({ group_id, group_name }) {
         })
 
         socket_obj.on('data', (message) => {
-            setMessages((prevMessages) => [...prevMessages, message.content]);
+            setMessages((prevMessages) => [...prevMessages, message]);
             console.log('got a new message', message)
         });
 
@@ -78,32 +79,58 @@ export default function Message({ group_id, group_name }) {
     }
     const handleEnterKey = (e) => {
         if (e.key === 'Enter') {
-          // Enter key was pressed, trigger the button click
-          sendMessage();
+            // Enter key was pressed, trigger the button click
+            sendMessage();
         }
-      }
+    }
+
+    useEffect(() => {
+        if (messagesRef.current) {
+            messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+        }
+    }, [messagesRef, messages])
 
 
     return (
-        <div className="container px-6 mx-auto lg:max-w-6xl">
-            <div> {group_name}: {group_id}</div>
-            <div className=" overflow-auto ">
-                {messages.map((msg, index) => (
-                    <div key={index}>{msg}</div>
-                ))}
+        <div className="container h-screen flex flex-col px-6 mx-auto lg:max-w-4xl">
+            <div className="overflow-auto flex-grow" ref={messagesRef}>
+                {messages.map((msg, index) => {
+                    let messageContainerClass = 'justify-start'
+                    let messageContentClass = 'bg-gray-900 text-white'
+
+                    if (msg.owner_id === user_id) {
+                        messageContainerClass = 'justify-end'
+                        messageContentClass = 'bg-gray-600 text-white'
+                    }
+
+                    return (
+                        <div key={index} className={`flex ${messageContainerClass} my-2`}>
+                            <div className={` ${messageContentClass}  rounded-lg p-2`}>
+                                {msg.content}
+                            </div>
+                        </div>
+                    )
+                })}
             </div>
             <div className="flex">
                 <div className="w-72 mr-4">
-                    <Input 
-                        name="message" 
-                        className="message-box rounded-lg" 
-                        type={'text'} 
-                        onKeyUp={handleEnterKey}/>
+                    <Input
+                        name="message"
+                        className="message-box rounded-lg"
+                        type="text"
+                        // value={inputValue}
+                        // onChange={handleChange}
+                        onKeyUp={handleEnterKey} // Trigger send on Enter key
+                    />
                 </div>
-                <Button variant="gradient" className="rounded-lg" onClick={sendMessage}>{'>>'}</Button>
+                <Button
+                    className="rounded-lg"
+                    onClick={sendMessage}
+                    variant="gradient"
+                >
+                    {'>>'}
+                </Button>
             </div>
-
-
         </div>
     )
 }
