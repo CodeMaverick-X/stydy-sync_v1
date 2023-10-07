@@ -10,11 +10,14 @@ import {
 } from "@material-tailwind/react";
 import { pageContext } from "./pages/Home";
 import Message from "./message";
+import { useUser } from './UserContext'
 
 export default function Default() {
 
     const { currentPage, setCurrentPage } = useContext(pageContext)
     const [groups, setGroups] = useState([])
+    const { userData } = useUser()
+    const user_id = userData.id
 
     // handle create group
     async function handleCreateGroup() {
@@ -49,7 +52,7 @@ export default function Default() {
 
         try {
             const res = await fetch('http://localhost:5000/api/joingroup', {
-                method: 'UPDATE',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -66,7 +69,7 @@ export default function Default() {
             }
 
         } catch (error) {
-            console.log(data, error)
+            console.log(error)
         }
     }
 

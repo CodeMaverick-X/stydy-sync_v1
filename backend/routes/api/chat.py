@@ -19,7 +19,7 @@ from backend.routes.api import api_bp
 
 
 @socketio.on('join')
-def join_group(data):
+def join_r(data):
     group_id = data['group_id']
     user_id = data['user_id']
     room = str(group_id)
@@ -27,11 +27,11 @@ def join_group(data):
     emit('join_notification', {'message': f'{user_id} has joined the chat'}, room=room) # TODO: implement notification
 
 @socketio.on('leave')
-def leave_group(data):
+def leave_r(data):
     group_id = data['group_id']
     user_id = data['user_id']
     room = str(group_id)
-    leave_group(room)
+    leave_room(room)
     emit('leave_notification', {'message': f'{user_id} has left the chat'}, room=room) # TODO: implement notification
 
 @socketio.on('disconnect')
@@ -102,11 +102,11 @@ def delete_group():
     NotImplemented
 
 
-@api_bp.route('/joingroup', methods=['POST'])
-@login_required
-def join_group():
-    """other users to join a group"""
-    NotImplemented
+# @api_bp.route('/joingroup', methods=['POST'])
+# @login_required
+# def join_group():
+#     """other users to join a group"""
+#     NotImplemented
 
 
 @api_bp.route('/groups', methods=['GET'])
@@ -118,6 +118,41 @@ def get_groups():
         groups = [group.to_dict() for group in user.groups]
         return make_response(jsonify({'groups': groups}))
     return make_response(jsonify({'errormessage': 'user not available'}), 400)
+
+
+@api_bp.route('/joingroup', methods=['POST'])
+@login_required
+def join_group():
+    """add a user to a group that he/she did not create: that is join a group"""
+    print('start of view function------------------#####')
+    data = request.get_data()
+    if not data:
+        return make_response(jsonify({'errormessage': 'empty data recieved'}), 400)
+    data = json.loads(data)
+    user_id = data.get('user_id')
+    group_id = data.get('group_id')
+    user = g.user
+    group = Group.find(id=group_id)
+    if user_id and user_id != g.user.id:
+        return make_response(jsonify({'errormessage': 'you doing something fishy with the user_id'}), 400)
+
+    if group and user:
+        group = group[0]
+        print('before already------------------#####')
+        already_in_group = [g for member in group.members if member.id == user.id]
+        if already_in_group:
+            return make_response(jsonify({'group_id': f'{group.id}', 'group_name': f'{group.name}',
+                                        'message': 'already in group'}), 201)
+        print('after already-----------------#####')
+        group.members.append(user)
+        group.save()
+        user.save()
+        print('after saving---------------------####')
+
+        return make_response(jsonify({'group_id': f'{group.id}', 'group_name': f'{group.name}'}), 201)
+    return make_response(jsonify({'errormessage': 'group does not exist'}), 400)
+
+
 
 # messages api
 
