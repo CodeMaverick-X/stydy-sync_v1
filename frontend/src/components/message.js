@@ -10,8 +10,9 @@ export default function Message({ group_id, group_name }) {
     const [messages, setMessages] = useState([])
     const [socket, setSocket] = useState('')
     const messagesRef = useRef(null)
-    const { userData } = useUser()
-    const user_id = userData.id
+    // const { userData } = useUser() // refresh issue
+    const user  = JSON.parse(localStorage.getItem('user'))
+    const user_id = user.id
 
 
     // fetch prevous message from server
@@ -92,7 +93,7 @@ export default function Message({ group_id, group_name }) {
 
 
     return (
-        <div className="container h-screen flex flex-col px-6 mx-auto lg:max-w-4xl">
+        <div className="container  flex flex-col px-6 mx-auto lg:max-w-4xl">
             <div className="overflow-auto flex-grow" ref={messagesRef}>
                 {messages.map((msg, index) => {
                     let messageContainerClass = 'justify-start'

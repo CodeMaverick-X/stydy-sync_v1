@@ -16,8 +16,10 @@ export default function Default() {
 
     const { currentPage, setCurrentPage } = useContext(pageContext)
     const [groups, setGroups] = useState([])
-    const { userData } = useUser()
-    const user_id = userData.id
+    // const { userData } = useUser() // not needed because of refresh
+    const user  = JSON.parse(localStorage.getItem('user'))
+    const [newGroup, setNewGroup] = useState('')
+    const user_id = user.id
 
     // handle create group
     async function handleCreateGroup() {
@@ -37,6 +39,7 @@ export default function Default() {
 
             if (res.ok) {
                 const data = await res.json()
+                setNewGroup(data)
                 console.log(`created ${data}`)
             }
         } catch (error) {
@@ -62,6 +65,7 @@ export default function Default() {
 
             const data = res.json()
             if (res.ok) {
+                setNewGroup(data)
 
                 console.log(`joined group ${data}`)
             } else {
@@ -97,7 +101,7 @@ export default function Default() {
             // setGroups([{'id': '132435465768', 'name': 'Hello world'}])
         }
         fetch_gr()
-    }, [])
+    }, [newGroup])
 
 
     function handlePageChange(group_id, group_name) {
