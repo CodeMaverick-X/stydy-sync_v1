@@ -42,7 +42,6 @@ def handle_message(data):
     room = str(group_id)
     group = Group.find(id=group_id)
     user = User.find(secodary_id =user_id)
-    # print(f'{group_id} ------ {user_id} ------- {message}')
     if group and user:
         user = user[0]
         group = group[0]
@@ -55,8 +54,6 @@ def handle_message(data):
             )
         message_obj.save()
         message = message_obj.to_dict()
-        # print(message, message_obj)
-        # print('hello- success----')
     
         emit('data', message, room=room)
 
@@ -105,7 +102,6 @@ def get_groups():
 @login_required
 def join_group():
     """add a user to a group that he/she did not create: that is join a group"""
-    print('start of view function------------------#####')
     data = request.get_data()
     if not data:
         return make_response(jsonify({'errormessage': 'empty data recieved'}), 400)
@@ -119,16 +115,13 @@ def join_group():
 
     if group and user:
         group = group[0]
-        print('before already------------------#####') # DEBUGGING
         already_in_group = [g for member in group.members if member.id == user.id]
         if already_in_group:
             return make_response(jsonify({'group_id': f'{group.id}', 'group_name': f'{group.name}',
                                         'message': 'already in group'}), 201)
-        print('after already-----------------#####')
         group.members.append(user)
         group.save()
         user.save()
-        print('after saving---------------------####')
 
         return make_response(jsonify({'group_id': f'{group.id}', 'group_name': f'{group.name}'}), 201)
     return make_response(jsonify({'errormessage': 'group does not exist'}), 400)

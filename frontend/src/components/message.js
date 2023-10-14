@@ -65,7 +65,7 @@ export default function Message({ group_id, group_name }) {
                 console.log('data event was removed')
             })
             socket_obj.emit('leave', { group_id, user_id })
-            socket_obj.disconnect()
+            socket_obj.disconnect(true)
         }
 
     }, [])
