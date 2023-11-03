@@ -1,5 +1,5 @@
 import React from "react"
-import { Outlet, Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useUser } from '../UserContext';
 
 
@@ -27,7 +27,7 @@ export default function Signup() {
 
     async function handleSubmit(event) {
         event.preventDefault();
-        console.log('help');
+        // console.log('help');
 
         if (formData.password === formData.passwordConfirm) {
             setPassMatched("shadow");
@@ -46,10 +46,10 @@ export default function Signup() {
 
                     setUserData(data)
                     localStorage.setItem('user', JSON.stringify(data))
-                    console.log('successful');
-                    navigate('/home');
+                    // console.log('successful');
+                    navigate('login');
                     // handle success like redirect
-                    console.log(data);
+                    // console.log(data);
                 } else {
                     console.log('error');
                     // handle error

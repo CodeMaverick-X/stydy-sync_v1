@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet, Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useUser } from '../UserContext';
 
 export default function Login() {
@@ -22,7 +22,7 @@ export default function Login() {
 
     async function handleSubmit(event) {
         event.preventDefault();
-        console.log('help');
+        // console.log('help');
 
         try {
             const response = await fetch('http://localhost:5000/auth/login', {
@@ -38,10 +38,11 @@ export default function Login() {
                 const data = await response.json()
                 setUserData(data)
                 localStorage.setItem('user', JSON.stringify(data))
-                console.log('successful')
-                navigate('/home');
+                localStorage.setItem('isLoggedIn', 'loggedin')
+                // console.log('successful')
+                navigate('/');
                 // handle success like redirect
-                console.log(data);
+                // console.log(data);
             } else {
                 const data = await response.json();
                 console.log('error');
@@ -94,7 +95,7 @@ export default function Login() {
                 Sign In
               </button>
             </div>
-            <p className="pt-5 italic">dont have an account? <Link to={'/signup'}>Sign up</Link></p>
+            <p className="pt-5 italic">dont have an account? <Link to={'signup'}>Sign up</Link></p>
           </form>
         </div>
       );

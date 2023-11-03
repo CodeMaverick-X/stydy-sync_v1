@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useRef } from "react"
 import { io } from "socket.io-client";
-import { useUser } from './UserContext'
 import { Input, Button } from "@material-tailwind/react"
+import { useSearchParams } from "react-router-dom";
 
 
 const ENDPOINT = 'http://localhost:5000/' // replace with main endpoint
 
-export default function Message({ group_id, group_name }) {
+export default function Message() {
     const [messages, setMessages] = useState([])
     const [socket, setSocket] = useState('')
     const messagesRef = useRef(null)
-    // const { userData } = useUser() // refresh issue
     const user  = JSON.parse(localStorage.getItem('user'))
     const user_id = user.id
+    const [searchParams, setSearchParams] = useSearchParams()
+    const group_id = searchParams.get('group_id')
+    const group_name = searchParams.get('group_name')
 
 
     // fetch prevous message from server
@@ -31,7 +33,7 @@ export default function Message({ group_id, group_name }) {
                 if (res.ok) {
                     const data = await res.json()
                     let messages = data.messages //.map((msg_obj) => msg_obj.content)
-                    console.log(messages, 'from messages')
+                    // console.log(messages, 'from messages')
                     setMessages(messages)
                 }
             }
@@ -56,7 +58,7 @@ export default function Message({ group_id, group_name }) {
 
         socket_obj.on('data', (message) => {
             setMessages((prevMessages) => [...prevMessages, message]);
-            console.log('got a new message', message)
+            // console.log('got a new message', message)
         });
 
         setSocket(socket_obj)
@@ -65,7 +67,7 @@ export default function Message({ group_id, group_name }) {
                 console.log('data event was removed')
             })
             socket_obj.emit('leave', { group_id, user_id })
-            socket_obj.disconnect(true)
+            socket_obj.disconnect()
         }
 
     }, [])
@@ -74,7 +76,7 @@ export default function Message({ group_id, group_name }) {
     const sendMessage = () => {
         const inputBox = document.querySelector('.message-box')
         const message = inputBox.value
-        console.log(message);
+        // console.log(message);
         socket.emit('data', { message, group_id, user_id })
         inputBox.value = ''
     }

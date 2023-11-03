@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Typography,
     Button,
@@ -8,19 +8,16 @@ import {
     CardFooter,
     Input
 } from "@material-tailwind/react";
-import { pageContext } from "./pages/Home";
-import Message from "./message";
-import { useUser } from './UserContext'
+import { useNavigate } from "react-router-dom";
 
 export default function Default() {
+    const navigate = useNavigate()
 
-    const { currentPage, setCurrentPage } = useContext(pageContext)
     const [groups, setGroups] = useState([])
-    // const { userData } = useUser() // not needed because of refresh
     const user  = JSON.parse(localStorage.getItem('user'))
     const [newGroup, setNewGroup] = useState('')
     const user_id = user.id
-
+    
     // handle create group
     async function handleCreateGroup() {
 
@@ -40,7 +37,7 @@ export default function Default() {
             if (res.ok) {
                 const data = await res.json()
                 setNewGroup(data)
-                console.log(`created ${data}`)
+                // console.log(`created ${data}`)
             }
         } catch (error) {
             console.log(`error: ${error}`)
@@ -67,7 +64,7 @@ export default function Default() {
             if (res.ok) {
                 setNewGroup(data)
 
-                console.log(`joined group ${data}`)
+                // console.log(`joined group ${data}`)
             } else {
                 console.log('could not join group')
             }
@@ -91,21 +88,21 @@ export default function Default() {
 
                 if (res.ok) {
                     const data = await res.json()
-                    console.log(data)
+                    // console.log(data)
                     setGroups(data.groups)
                 }
             } catch (error) {
                 console.log(error)
 
             }
-            // setGroups([{'id': '132435465768', 'name': 'Hello world'}])
+            // setGroups([{'id': '132435465768', 'name': 'Hello world'}]) // DEbugging
         }
         fetch_gr()
     }, [newGroup])
 
 
     function handlePageChange(group_id, group_name) {
-        setCurrentPage(<Message group_id={group_id} group_name={group_name} />)
+        navigate(`group?group_id=${group_id}&group_name=${group_name}`)
     }
 
     return (

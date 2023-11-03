@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 CORS(app, supports_credentials=True)
 
 # , engineio_logger=True, logger=True goes here | for debugging
-socketio = SocketIO(app, cors_allowed_origins="*", engineio_logger=True, logger=True)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 with app.app_context():
     from backend.routes.api import api_bp
@@ -28,6 +28,7 @@ app.register_blueprint(api_bp)
 @app.route('/signup')
 @app.route('/home')
 @app.route('/login')
+@app.route('/group')
 @app.route('/')
 def serve_react_app():
     return app.send_static_file('index.html')
