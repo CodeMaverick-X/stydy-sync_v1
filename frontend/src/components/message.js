@@ -115,7 +115,7 @@ export default function Message() {
                     )
                 })}
             </div>
-            <div className="flex">
+            <div className="flex absolute bottom-3">
                 <div className="w-72 mr-4">
                     <Input
                         name="message"
