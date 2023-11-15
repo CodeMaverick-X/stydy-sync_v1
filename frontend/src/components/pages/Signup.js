@@ -132,7 +132,7 @@ export default function Signup() {
                         Sign Up
                     </button>
                 </div>
-                <p className="pt-5 italic">already have an account? <Link to={'/login'}>login</Link></p>
+                <p className="pt-5 italic">already have an account? <Link to={'../login'}>login</Link></p>
             </form>
 
         </div>

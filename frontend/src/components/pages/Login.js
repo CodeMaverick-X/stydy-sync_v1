@@ -95,7 +95,7 @@ export default function Login() {
                 Sign In
               </button>
             </div>
-            <p className="pt-5 italic">dont have an account? <Link to={'signup'}>Sign up</Link></p>
+            <p className="pt-5 italic">dont have an account? <Link to={'../signup'}>Sign up</Link></p>
           </form>
         </div>
       );

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react"
 import { io } from "socket.io-client";
 import { Input, Button } from "@material-tailwind/react"
 import { useSearchParams } from "react-router-dom";
+import Loader from "./Loader";
 
 
 const ENDPOINT = 'http://localhost:5000/' // replace with main endpoint
@@ -15,6 +16,7 @@ export default function Message() {
     const [searchParams, setSearchParams] = useSearchParams()
     const group_id = searchParams.get('group_id')
     const group_name = searchParams.get('group_name')
+    const [loading, setLoading] = useState(true);
 
 
     // fetch prevous message from server
@@ -34,6 +36,7 @@ export default function Message() {
                     const data = await res.json()
                     let messages = data.messages //.map((msg_obj) => msg_obj.content)
                     // console.log(messages, 'from messages')
+                    setLoading(false)
                     setMessages(messages)
                 }
             }
@@ -96,16 +99,17 @@ export default function Message() {
 
     return (
         <div className="container  flex flex-col px-6 mx-auto lg:max-w-4xl">
-            <div className="overflow-auto flex-grow" ref={messagesRef}>
+            {loading? (<Loader />):
+                <div className="overflow-auto flex-grow mb-10" ref={messagesRef}>
                 {messages.map((msg, index) => {
                     let messageContainerClass = 'justify-start'
                     let messageContentClass = 'bg-gray-900 text-white'
-
+                    
                     if (msg.owner_id === user_id) {
                         messageContainerClass = 'justify-end'
                         messageContentClass = 'bg-gray-600 text-white'
                     }
-
+                    
                     return (
                         <div key={index} className={`flex ${messageContainerClass} my-2`}>
                             <div className={` ${messageContentClass}  rounded-lg p-2`}>
@@ -115,7 +119,8 @@ export default function Message() {
                     )
                 })}
             </div>
-            <div className="flex absolute bottom-3">
+            }
+            <div className="flex absolute bottom-0 w-auto bg-white pb-3">
                 <div className="w-72 mr-4">
                     <Input
                         name="message"

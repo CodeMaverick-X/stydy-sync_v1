@@ -25,13 +25,18 @@ with app.app_context():
 app.register_blueprint(auth_bp)
 app.register_blueprint(api_bp)
 
-@app.route('/signup')
+@app.route('/auth/signup')
 @app.route('/home')
-@app.route('/login')
+@app.route('/auth/login')
 @app.route('/group')
 @app.route('/')
 def serve_react_app():
     return app.send_static_file('index.html')
+
+# @app.route('/', defaults={'path': ''})
+# @app.route('/<path:path>')                         # STILL DONT KNOW WHY IT DONT WORK
+# def serve_react_app(path):
+#     return app.send_static_file('index.html')
 
 
 
