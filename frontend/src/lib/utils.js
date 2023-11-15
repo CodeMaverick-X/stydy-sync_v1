@@ -84,3 +84,32 @@ export const getGroups = async () => {
 
     }
 }
+
+//  Messages utils***********
+
+/**
+ * get messages from the group when you open the group
+ * next set of messages will be done with websockets
+ * @param group_id: group id 
+ */
+export const getMessages = async (group_id) => {
+    try {
+        const res = await fetch(`${ENDPOINT}/api/messages/${group_id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+
+        })
+
+        if (res.ok) {
+            const data = await res.json()
+            const messages = data.messages
+            return messages
+        }
+
+    } catch (error) {
+        console.log(error, 'from  messages')
+    }
+}

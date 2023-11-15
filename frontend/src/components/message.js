@@ -3,15 +3,16 @@ import { io } from "socket.io-client";
 import { Input, Button } from "@material-tailwind/react"
 import { useSearchParams } from "react-router-dom";
 import Loader from "./Loader";
+import { getMessages } from "../lib/utils";
 
 
-const ENDPOINT = 'http://localhost:5000/' // replace with main endpoint
+const ENDPOINT = 'http://localhost:5000/' // TODO: replace with main endpoint
 
 export default function Message() {
     const [messages, setMessages] = useState([])
     const [socket, setSocket] = useState('')
     const messagesRef = useRef(null)
-    const user  = JSON.parse(localStorage.getItem('user'))
+    const user = JSON.parse(localStorage.getItem('user'))
     const user_id = user.id
     const [searchParams, setSearchParams] = useSearchParams()
     const group_id = searchParams.get('group_id')
@@ -19,33 +20,18 @@ export default function Message() {
     const [loading, setLoading] = useState(true);
 
 
-    // fetch prevous message from server
+    // Fetch prevous message from server
     useEffect(() => {
-        try {
-            async function fetch_msg() {
-                const res = await fetch(`http://localhost:5000/api/messages/${group_id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include'
-
-                })
-
-                if (res.ok) {
-                    const data = await res.json()
-                    let messages = data.messages //.map((msg_obj) => msg_obj.content)
-                    // console.log(messages, 'from messages')
-                    setLoading(false)
-                    setMessages(messages)
-                }
+        (async () => {
+            const grMessages = await getMessages(group_id)
+            setLoading(false)
+            if (grMessages) {
+                setMessages(grMessages)
             }
-            fetch_msg()
-        } catch (error) {
-            console.log(error, 'from fetch_msg')
-        }
+        })()
     }, [])
 
+    // Web sockets for message communication
     useEffect(() => {
         const socket_obj = io(ENDPOINT, {
             transports: ['websocket'],
@@ -65,7 +51,7 @@ export default function Message() {
         });
 
         setSocket(socket_obj)
-        return function cleanup() {
+        return () => { // clean up
             socket_obj.off('data', () => {
                 console.log('data event was removed')
             })
@@ -83,9 +69,10 @@ export default function Message() {
         socket.emit('data', { message, group_id, user_id })
         inputBox.value = ''
     }
+
+    // Enter key was pressed, trigger the button click
     const handleEnterKey = (e) => {
         if (e.key === 'Enter') {
-            // Enter key was pressed, trigger the button click
             sendMessage();
         }
     }
@@ -99,26 +86,26 @@ export default function Message() {
 
     return (
         <div className="container  flex flex-col px-6 mx-auto lg:max-w-4xl">
-            {loading? (<Loader />):
+            {loading ? (<Loader />) :
                 <div className="overflow-auto flex-grow mb-10" ref={messagesRef}>
-                {messages.map((msg, index) => {
-                    let messageContainerClass = 'justify-start'
-                    let messageContentClass = 'bg-gray-900 text-white'
-                    
-                    if (msg.owner_id === user_id) {
-                        messageContainerClass = 'justify-end'
-                        messageContentClass = 'bg-gray-600 text-white'
-                    }
-                    
-                    return (
-                        <div key={index} className={`flex ${messageContainerClass} my-2`}>
-                            <div className={` ${messageContentClass}  rounded-lg p-2`}>
-                                {msg.content}
+                    {messages.map((msg, index) => {
+                        let messageContainerClass = 'justify-start'
+                        let messageContentClass = 'bg-gray-900 text-white'
+
+                        if (msg.owner_id === user_id) {
+                            messageContainerClass = 'justify-end'
+                            messageContentClass = 'bg-gray-600 text-white'
+                        }
+
+                        return (
+                            <div key={index} className={`flex ${messageContainerClass} my-2`}>
+                                <div className={` ${messageContentClass}  rounded-lg p-2`}>
+                                    {msg.content}
+                                </div>
                             </div>
-                        </div>
-                    )
-                })}
-            </div>
+                        )
+                    })}
+                </div>
             }
             <div className="flex absolute bottom-0 w-auto bg-white pb-3">
                 <div className="w-72 mr-4">
