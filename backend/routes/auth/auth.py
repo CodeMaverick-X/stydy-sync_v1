@@ -2,7 +2,8 @@
 """Blueprint for authentication"""
 import json
 
-from flask import Blueprint, current_app, jsonify, make_response, request
+from flask import (Blueprint, current_app, jsonify, make_response, request,
+                   session)
 from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
 
@@ -34,8 +35,9 @@ def login():
         if password == user[0].password: # hash password
             user = user[0]
             login_user(user) # login user
+            session['user_id'] = user.secodary_id 
             return make_response(jsonify({
-            'id': current_user.id,
+            'id': current_user.secodary_id,
             'username': user.username,
             'email': user.email
              }), 200)
@@ -60,9 +62,10 @@ def signup():
         user = User(username=username, password=password, email=email)
         user.save() # save user
         login_user(user) # login user
+        session['user_id'] = user.secodary_id 
         
         return make_response(jsonify({
-            'id': user.id,
+            'id': user.secodary_id ,
             'username': user.username,
             'email': user.email
              }), 201)
