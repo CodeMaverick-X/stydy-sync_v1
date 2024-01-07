@@ -27,6 +27,7 @@ export default function Message() {
             setLoading(false)
             if (grMessages) {
                 setMessages(grMessages)
+                console.log(grMessages) //TODO: remove debugging
             }
         })()
     }, [])
@@ -91,16 +92,21 @@ export default function Message() {
                     {messages.map((msg, index) => {
                         let messageContainerClass = 'justify-start'
                         let messageContentClass = 'bg-gray-900 text-white'
+                        let messageOwner = msg.username
 
                         if (msg.owner_id === user_id) {
                             messageContainerClass = 'justify-end'
                             messageContentClass = 'bg-gray-600 text-white'
+                            messageOwner = 'me'
                         }
 
                         return (
                             <div key={index} className={`flex ${messageContainerClass} my-2`}>
                                 <div className={` ${messageContentClass}  rounded-lg p-2`}>
-                                    {msg.content}
+                                    <div className="text-xs underline" >{messageOwner}</div>
+                                    <div>
+                                        {msg.content}
+                                    </div>
                                 </div>
                             </div>
                         )

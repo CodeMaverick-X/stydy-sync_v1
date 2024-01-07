@@ -2,6 +2,8 @@ import uuid
 from datetime import datetime
 
 from flask_login import UserMixin
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.event import listens_for
 
 from backend import db
 
@@ -33,27 +35,27 @@ class User(UserMixin, Base):
     """user model"""
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
-    secodary_id = db.Column(db.String(36), default=generate_uuid, unique=True)
-    username = db.Column(db.String(50), unique=True)
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100), unique=False)
+    id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
+    secodary_id: Mapped[str] = mapped_column(db.String(36), default=generate_uuid, unique=True)
+    username: Mapped[str] = mapped_column(db.String(50), unique=True)
+    email: Mapped[str] = mapped_column(db.String(100), unique=True)
+    password: Mapped[str] = mapped_column(db.String(100), unique=False)
     groups = db.relationship('Group', secondary=group_members, back_populates='members')
     messages = db.relationship('Message', back_populates='user')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=datetime.utcnow)
 
 class Group(Base):
     """Group model for group chats"""
 
     __tablename__ = 'groups'
 
-    id = db.Column(db.String(36), primary_key=True, default=generate_uuid, unique=True)
-    owner_id = db.Column(db.String(36), db.ForeignKey('users.secodary_id'))
-    # content = db.Column(db.String(200), unique=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    id: Mapped[str] = mapped_column(db.String(36), primary_key=True, default=generate_uuid, unique=True)
+    owner_id: Mapped[str] = mapped_column(db.String(36), db.ForeignKey('users.secodary_id'))
+    # content = mapped_column(db.String(200), unique=False)
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=datetime.utcnow)
     members = db.relationship('User', secondary=group_members, back_populates='groups')
-    name = db.Column(db.String(50), unique=False)
-    messages = db.relationship('Message', back_populates='group')
+    name: Mapped[str] = mapped_column(db.String(50), unique=False)
+    messages: Mapped[str] = db.relationship('Message', back_populates='group', order_by='asc(Message.created_at)')
 
 
     def to_dict(self):
@@ -74,14 +76,16 @@ class Message(Base):
 
     __tablename__ = 'messages'
 
-    id = db.Column(db.String(36), primary_key=True, default=generate_uuid, unique=True)
-    owner_id = db.Column(db.String(36), db.ForeignKey('users.secodary_id'))
+    id: Mapped[str] = mapped_column(db.String(36), primary_key=True, default=generate_uuid, unique=True)
+    owner_id: Mapped[str] = mapped_column(db.String(36), db.ForeignKey('users.secodary_id'))
     user = db.relationship('User', back_populates='messages')
-    content = db.Column(db.String(200), unique=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    sort_number = db.Column(db.Integer)
+    content: Mapped[str] = mapped_column(db.String(200), unique=False)
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=datetime.utcnow)
+    sort_number = mapped_column(db.Integer)
     group = db.relationship('Group', back_populates='messages')
-    group_id = db.Column(db.String(36), db.ForeignKey('groups.id'))
+    group_id: Mapped[str] = mapped_column(db.String(36), db.ForeignKey('groups.id'))
+
+    username: Mapped[str] = mapped_column(db.String(50), nullable=False)
 
 
     @classmethod
@@ -104,3 +108,6 @@ class Message(Base):
         # print(new_dict, 'from to dict funct---------------')
         return new_dict
 
+@listens_for(Message, 'before_insert')
+def before_message_insert(mapper, connection, target):
+    target.username = target.user.username

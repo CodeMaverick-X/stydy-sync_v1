@@ -47,7 +47,7 @@ export default function Signup() {
                     setUserData(data)
                     localStorage.setItem('user', JSON.stringify(data))
                     // console.log('successful');
-                    navigate('login');
+                    navigate('../login');
                     // handle success like redirect
                     // console.log(data);
                 } else {
