@@ -113,3 +113,30 @@ export const getMessages = async (group_id) => {
         console.log(error, 'from  messages')
     }
 }
+
+// Get group info {Side panel}
+
+/**
+ * 
+ * @param {*} group_id: group id of the group 
+ * @returns : returns the group info with members included
+ */
+export const getGroupInfo = async (group_id) => {
+    try {
+        const res = await fetch(`${ENDPOINT}/api/groupinfo/${group_id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        })
+        if (res.ok) {
+            const data = await res.json()
+            const groupInfo = data.group_info
+            return groupInfo
+        }
+    } catch (error) {
+        console.log(error)
+        
+    }
+}

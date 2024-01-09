@@ -97,6 +97,25 @@ def get_groups():
         return make_response(jsonify({'groups': groups}))
     return make_response(jsonify({'errormessage': 'user not available'}), 400)
 
+@api_bp.route('/groupinfo/<group_id>', methods=['GET'])
+@login_required
+def get_group_info(group_id):
+    """gets the group info in detail for the side panel  in message ui"""
+    group = Group.find(id=group_id)
+    if group:
+        group = group[0]
+        user = g.user
+        user_id = user.secodary_id
+        if ( user.secodary_id not in [ member.secodary_id for member in group.members] and user_id != group.owner_id):
+            return make_response(jsonify({'errormessage': 'not authorized to make this request'}), 400)
+        
+        group_members = [ member.username for member in group.members ]
+        group_data = group.to_dict()
+        group_data.update({'members': group_members})
+
+        return make_response(jsonify({'group_info': group_data}), 200)
+    return make_response(jsonify({'erromesage': 'group not found'}), 401)
+
 
 @api_bp.route('/joingroup', methods=['POST'])
 @login_required
